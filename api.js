@@ -3,14 +3,41 @@ var btn = document.getElementById("btn");
 var slide = document.getElementById("slide");
 var srch = document.getElementById("srch")
 var searchBtn= document.getElementById("search-btn")
+var Select=document.getElementById("choice")
+
+
 
 searchBtn.addEventListener("click",()=>{
+ 
+    
+  var selectedIndex = Select.selectedIndex;
+  
+    if (selectedIndex !== -1) {
+      var selectedOption = Select.options[selectedIndex];
+      var selectedValue = Select.value;
+      var selectedText = Select.options[selectedIndex].text;
+      Select.options[selectedIndex].removeAttribute("selected");
+      console.log("Selected Value: " + selectedValue);
+      console.log("Selected Text: " + selectedText);
+    } else {
+      console.log("No option selected.");
+    }
+
+  
+  // let Count=Select.options.length
+  // for(let i=0;i<Count;i++){
+  //   if(Select.value!=option[i].value && option[i].disabled == true )
+  //   option[i].disabled =false 
+  // }
+
 
   let choice= document.getElementById("choice")
   if(srch.value){
     choice.innerHTML+=`<option  selected>${srch.value}</option>`
     srch.value=""
   }
+
+  
 
 
 })
