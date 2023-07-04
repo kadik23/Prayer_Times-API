@@ -1,0 +1,22 @@
+{
+  "name": "prayer_times-api",
+  "version": "1.0.0",
+  "description": "Prayer_Times is a web app using JS to view prayer times for your region\r <h1>Soon..</h1>",
+  "main": "api.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kadik23/Prayer_Times-API.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kadik23/Prayer_Times-API/issues"
+  },
+  "homepage": "https://github.com/kadik23/Prayer_Times-API#readme",
+  "dependencies": {
+    "axios": "^1.4.0"
+  }
+}
