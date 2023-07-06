@@ -2,16 +2,13 @@ var btn = document.getElementById("btn");
 var slide = document.getElementById("slide");
 var srch = document.getElementById("srch");
 var searchBtn = document.getElementById("search-btn");
-var Select = document.getElementById("choice");
+var selectElement = document.getElementById("choice");
 
-
-var cities={
-"medea":"DZ-26",
-"alger":"DZ-16",
-"oran":"DZ-31",
-"constantine":"DZ-25",
-"blida":"DZ-09"
+var cities=["Alger","Medea","Oran"];
+for(let city of cities){
+  selectElement.innerHTML+=`<option>${city}</option>`;
 }
+
 
 // Get the current date and time
 
@@ -30,7 +27,6 @@ function updateClock(){
 }
 
 
-
 // Create an array of month names
 var monthNames = [
   "Jan", "Feb", "Mar", "Apr", "May", "Jun",
@@ -46,48 +42,38 @@ var formattedDate = day + ' ' + month + ' ' + year;
 
 //___________________ if add city to select.option________________________________________
 searchBtn.addEventListener("click", () => {
-      // alert(Select.options.length);
-
-      for (let i = 0; i < Select.options.length; i++) {
-        if (Select.options[i].textContent === srch.value) {
-          fnc(srch.value);
-          srch.value = "";
-
-          var selectedIndex = Select.selectedIndex;
-
-          if (selectedIndex !== -1) {
-            let selectedOption = Select.options[selectedIndex];
-            selectedOption.removeAttribute("selected");
-          } else {
-            console.log("No option selected.");
-            Select.options[i].selected = true;
-          }
-
+  let inputValue =capitalizeFirstLetter(srch.value) 
+      for (let i = 0; i < selectElement.options.length; i++) {
+        if (selectElement.options[i].textContent === inputValue) {
+          selectElement.value=inputValue;
+          srch.value=""
           break;
         }
       }
-
+      
       if (srch.value) {
-        var selectedIndex = Select.selectedIndex;
-
-        if (selectedIndex !== -1 && Select.options[selectedIndex].textContent === srch.value) {
-          // Entered value is already the selected option
-          fnc(srch.value);
-          srch.value = "";
-        } else {
-          let choice = document.getElementById("choice");
-          choice.innerHTML += `<option selected>${srch.value}</option>`;
-          fnc(srch.value);
-          srch.value = "";
-        }
+        choice.innerHTML += `<option selected>${inputValue}</option>`;
+        srch.value = "";
       }
+      
+      fnc(selectElement.value);     
 });
+
+
+
+//change in option selected
+choice.addEventListener("change",()=>{
+  fnc(selectElement.value)
+})
+
+
 
 // click right arrow_________________________________
 btn.addEventListener("click", () => {
     slide.classList.toggle("hidden");
     btn.classList.toggle("pos-change")
 });
+
 
 
 // GET-API-Request
@@ -101,55 +87,65 @@ var fnc = (city) => {
           var cityCode = cities[cityName];
         }
       }
-
+      let params={        
+        country:"DZ",
+        city:city
+      }
     // http://api.aladhan.com/v1/timingsByCity/:date?country=DZ&city=DZ-26
     axios.get(
-        `https://api.aladhan.com/v1/calendarByCity?city=${cityCode}&country=Algerie&method=1`
+        `http://api.aladhan.com/v1/timingsByCity`,{
+      params:params
+      }
     )
     .then((response) => {
       let athans = response.data.data;
-      for (var athan of athans) {
-        if (athan.date.readable == formattedDate) {
+      // for (var athan of athans) {
+      //   if (athan.date.readable == formattedDate) {
           // console.log(athan.date.hijri.day+" "+athan.date.hijri.month.ar+" "+athan.date.hijri.year);
           // console.log(athan.date.hijri.weekday.ar)
-          document.getElementById("date").innerHTML=athan.date.hijri.weekday.ar+"<br>"+athan.date.hijri.day+" "+athan.date.hijri.month.ar+" "+athan.date.hijri.year;
+          document.getElementById("date").innerHTML=athans.date.hijri.weekday.ar+"<br>"+athans.date.hijri.day+" "+athans.date.hijri.month.ar+" "+athans.date.hijri.year;
           updateClock()
           setInterval(updateClock, 1000);
 
-          var apiResponse = athan.timings.Fajr;
+          var apiResponse = athans.timings.Fajr;
           var alfajr = apiResponse.split(" ")[0];
-          document.getElementById("alfajr").innerHTML=`<h3 class="mawa9it">${alfajr}</h3><h4>الفجر</h4> ` 
+          change_prayer_time("alfajr",alfajr,"الفجر")
 
+          apiResponse = athans.timings.Sunrise;
+          var Sunrise = apiResponse.split(" ")[0];
+          change_prayer_time("sunrise",Sunrise,"الشروق")
 
-          apiResponse = athan.timings.Sunset;
-          var Sunset = apiResponse.split(" ")[0];
-          document.getElementById("sunset").innerHTML=`<h3 class="mawa9it">${Sunset}</h3><h4>الشروق</h4> ` 
-
-
-           apiResponse = athan.timings.Dhuhr;
+           apiResponse = athans.timings.Dhuhr;
           var Dhuhr = apiResponse.split(" ")[0];
-          document.getElementById("alduhr").innerHTML=`<h3 class="mawa9it">${Dhuhr}</h3><h4>الظهر</h4> ` 
-
+          change_prayer_time("alduhr",Dhuhr,"الظهر")
            
-           apiResponse = athan.timings.Asr;
+           apiResponse = athans.timings.Asr;
           var Asr = apiResponse.split(" ")[0];
-          document.getElementById("alasr").innerHTML=`<h3 class="mawa9it">${Asr}</h3><h4>العصر</h4> ` 
+          change_prayer_time("alasr",Asr,"العصر")
 
-           apiResponse = athan.timings.Maghrib;
+           apiResponse = athans.timings.Maghrib;
           var Maghrib = apiResponse.split(" ")[0];
-          document.getElementById("almaghreb").innerHTML=`<h3 class="mawa9it">${Maghrib}</h3><h4>المغرب</h4> ` 
+          change_prayer_time("almaghreb",Maghrib,"المغرب")
 
-           apiResponse = athan.timings.Isha;
+           apiResponse = athans.timings.Isha;
           var Isha = apiResponse.split(" ")[0];
-          document.getElementById("al-ishaa").innerHTML=`<h3 class="mawa9it">${Isha}</h3><h4>العشاء</h4> ` 
-        }
-      }
+          change_prayer_time("al-ishaa",Isha,"العشاء")
+      
     });
 };
 
 
 // auto get-API
-  var selectedIndex = Select.selectedIndex;
-  let selectedOption = Select.options[selectedIndex];
-  fnc(selectedOption.textContent)
+  fnc(selectElement.value)
 
+
+  function capitalizeFirstLetter(word) {
+    var lowercaseWord = word.toLowerCase();
+    var capitalizedWord = lowercaseWord.charAt(0).toUpperCase() + lowercaseWord.slice(1);
+    return capitalizedWord;
+  }
+
+
+  function change_prayer_time(id,data,prayer_name){
+    document.getElementById(id).innerHTML=`<h3 class="mawa9it">${data}</h3><h4>${prayer_name}</h4> ` 
+  }
